@@ -18,8 +18,9 @@ A data frame where each column corresponds to a band in the image.
 This function converts a 3D image array into a data frame, where each column represents a band.
 }
 \examples{
-image <- array(runif(300), dim = c(10, 10, 3))
+library(raster)
+df_img <- data.frame(Band1 = runif(100), Band2 = runif(100), Band3 = runif(100))
+template_raster <- stack(replicate(3, raster(matrix(runif(100), 10, 10))))
 band_names <- c("Band1", "Band2", "Band3")
-df_img <- img2df(image, band_names)
-
+df_img <- img2df(template_raster, band_names)
 }

@@ -1,6 +1,6 @@
 <h1>imageTools</h1>
 
-<h1><img src="logo_1.png" alt="imageTools Logo" style="width: 100px;"/> imageTools</h1>
+<h1><img src="logo_1.png" alt="imageTools Logo" style="width: 100px;"/> </h1>
 
 <p>The <strong>imageTools</strong> package provides a suite of tools designed for the analysis and manipulation of raster images. This package includes functionalities for image classification, confusion matrix evaluation, data frame to image conversion, and more. Whether you're working with satellite imagery <strong>imageTools</strong> offers some utilities you need to streamline your workflow.</p>
 

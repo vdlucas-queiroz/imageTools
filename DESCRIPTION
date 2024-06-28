@@ -1,0 +1,13 @@
+Package: imageTools
+Type: Package
+Title: Tools for Remote Sensing Image Processing and Analysis
+Version: 0.1.0
+Author: Vinícius D'Lucas Bezerra e Queiroz [aut, cre]
+Maintainer: Vinícius D'Lucas Bezerra e Queiroz <vinicius.dlucas@gmail.com>
+Description: A set of tools for processing and analyzing remote sensing images, including functions for sampling raster data, creating shapefiles, classification algorithms,validating classifications, and calculating metrics. CMAP classifier is included.
+Imports:sf,dplyr,raster,terra,reshape2,dplyr,stats,ggplot2,caret,fitdistrplus,MVN,scales,extrafont
+Depends: R (>= 3.5.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.1

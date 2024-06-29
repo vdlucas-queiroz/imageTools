@@ -2,7 +2,7 @@
 
 <h1><img src="logo_1.png" alt="imageTools Logo" style="width: 100px;"/> </h1>
 
-<p>The <strong>imageTools</strong> package provides a suite of tools designed for the analysis and manipulation of raster images. This package includes functionalities for image classification, confusion matrix evaluation, data frame to image conversion, and more. Whether you're working with satellite imagery <strong>imageTools</strong> offers some utilities you need to streamline your workflow.</p>
+<p>The <strong>imageTools</strong> package provides a suite of tools designed for the analysis and manipulation of raster images. This package includes functionalities for image classification, confusion matrix evaluation, dataframe to image conversion, and more. Whether you're working with satellite imagery <strong>imageTools</strong> offers some utilities you need to streamline your workflow.</p>
 
 <h2>Features</h2>
 <ul>
@@ -18,11 +18,11 @@
 <p>To install the latest version of the <strong>imageTools</strong> package from GitHub, use the following commands in R:</p>
 
 <pre><code>install.packages("devtools")
-devtools::install_github("yourusername/imageTools")</code></pre>
+devtools::install_github("vdlucas-queiroz/imageTools")</code></pre>
 
-<h2>Usage</h2>
+<h2>Usage Example</h2>
 
-<h3>Data Frame to Image Conversion</h3>
+<h3>Dataframe to Image Conversion</h3>
 <p>Convert a data frame to an image array, which is useful for manipulating raster data as data frames and vice versa:</p>
 
 <pre><code># Load the necessary libraries

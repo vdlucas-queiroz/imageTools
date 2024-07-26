@@ -4,19 +4,14 @@
 \alias{compareRasterClassification}
 \title{Compare Raster Classifications}
 \usage{
-compareRasterClassification(
-  baseDirectory_ML,
-  baseDirectory_CMAP,
-  years,
-  maskPath
-)
+compareRasterClassification(baseDirectory_1, baseDirectory_2, n, maskPath)
 }
 \arguments{
-\item{baseDirectory_ML}{The base directory for ML classification rasters.}
+\item{baseDirectory_1}{The base directory 1}
 
-\item{baseDirectory_CMAP}{The base directory for CMAP classification rasters.}
+\item{baseDirectory_2}{The base directory 2}
 
-\item{years}{A vector of years corresponding to the raster files.}
+\item{n}{Number of images.}
 
 \item{maskPath}{The path to the cloud mask raster file.}
 }
@@ -32,8 +27,8 @@ baseDirectory_ML <- "path/to/ML/"
 baseDirectory_CMAP <- "path/to/CMAP/"
 years <- c(2000, 2001, 2002)
 maskPath <- "path/to/cloud_mask.TIF"
-if (file.exists(maskPath) && all(file.exists(paste0(baseDirectory_ML, "Classification_", years, ".TIF"))) && all(file.exists(paste0(baseDirectory_CMAP, "CMAP_", 1:length(years), ".TIF")))) {
-  result <- compareRasterClassification(baseDirectory_ML, baseDirectory_CMAP, years, maskPath)
+if (file.exists(maskPath) && all(file.exists(paste0(baseDirectory_1, "Classification_", n, ".TIF"))) && all(file.exists(paste0(baseDirectory_2, "classification_", 1:length(n), ".TIF")))) {
+  result <- compareRasterClassification(baseDirectory_1, baseDirectory_2, years, maskPath)
 } else {
   message("Example files do not exist. Please provide the correct paths to the classification rasters and cloud mask.")
 }

@@ -170,7 +170,7 @@ CMAP_classifier <- function(class_likelihood_paths,traj_weights,output_path, mas
   # Each column refers to one date
 
   classification <- matrix(0, nrow = num_rows, ncol = n_dates)
-
+  trajectory_ids <- rep(0, num_rows)
   valorm <- rep(-100, num_rows)
 
   # Facilitating the shifting of columns in the dataframe
@@ -183,7 +183,6 @@ CMAP_classifier <- function(class_likelihood_paths,traj_weights,output_path, mas
   for (s in 1:n_trajectories) {
     if (traj_weights$final_weights[s] != 0) {
       trajectory_sequence <- as.numeric(traj_weights[s, 1:n_dates])
-
       value <- rep(1, num_rows)
 
       # Multiplying the likelihood values of each class w
@@ -205,7 +204,7 @@ CMAP_classifier <- function(class_likelihood_paths,traj_weights,output_path, mas
       # Replaces the trajectory by complet
       if (length(update_indices) > 0) {
         classification[update_indices, ] <- matrix(trajectory_sequence, nrow = length(update_indices), ncol = n_dates, byrow = TRUE)
-
+        trajectory_ids[update_indices] <- s #saving trajectory ID
         # Update the minimum value
         valorm[update_indices] <- value[update_indices]
       }
@@ -230,6 +229,9 @@ CMAP_classifier <- function(class_likelihood_paths,traj_weights,output_path, mas
     writeRaster(b1,paste0(output_path,"CMAP_",i,".tif"),overwrite=TRUE)
 
   }
+
+  b1[] <- trajectory_ids
+  writeRaster(b1, paste0(output_path, "Trajectory_IDs.tif"), overwrite=TRUE)
 }
 
 
@@ -262,14 +264,14 @@ verify_dimensions <- function(paths) {
     } else {
       # Se as dimensões não forem iguais às da primeira imagem, retornar FALSE
       if (!all(inicial == dimensoes)) {
-        cat("Imagem em", path, "tem dimensões diferentes: esperado", inicial, "obtido", dimensoes, "\n")
+        cat("Images in", path, "have different dimensions: expected", inicial, "achieved", dimensoes, "\n")
         return(FALSE)
       }
     }
   }
 
   # Se todas as imagens têm as mesmas dimensões
-  cat("Todas as imagens têm as mesmas dimensões:", inicial, "\n")
+  cat("All images have the same dimensions:", inicial, "\n")
   return(TRUE)
 }
 
@@ -489,9 +491,9 @@ calcularTransicoesImpossiveis <- function(diretorioBase, anos, caminhosTransicoe
 #'
 #' This function compares raster classifications from two sources over multiple years and calculates the differences.
 #'
-#' @param baseDirectory_ML The base directory for ML classification rasters.
-#' @param baseDirectory_CMAP The base directory for CMAP classification rasters.
-#' @param years A vector of years corresponding to the raster files.
+#' @param baseDirectory_1 The base directory 1
+#' @param baseDirectory_2 The base directory 2
+#' @param n Number of images.
 #' @param maskPath The path to the cloud mask raster file.
 #' @return A list containing the accumulated differences and the final percentage of disagreement.
 #' @import raster
@@ -502,30 +504,30 @@ calcularTransicoesImpossiveis <- function(diretorioBase, anos, caminhosTransicoe
 #' baseDirectory_CMAP <- "path/to/CMAP/"
 #' years <- c(2000, 2001, 2002)
 #' maskPath <- "path/to/cloud_mask.TIF"
-#' if (file.exists(maskPath) && all(file.exists(paste0(baseDirectory_ML, "Classification_", years, ".TIF"))) && all(file.exists(paste0(baseDirectory_CMAP, "CMAP_", 1:length(years), ".TIF")))) {
-#'   result <- compareRasterClassification(baseDirectory_ML, baseDirectory_CMAP, years, maskPath)
+#' if (file.exists(maskPath) && all(file.exists(paste0(baseDirectory_1, "Classification_", n, ".TIF"))) && all(file.exists(paste0(baseDirectory_2, "classification_", 1:length(n), ".TIF")))) {
+#'   result <- compareRasterClassification(baseDirectory_1, baseDirectory_2, years, maskPath)
 #' } else {
 #'   message("Example files do not exist. Please provide the correct paths to the classification rasters and cloud mask.")
 #' }
-compareRasterClassification <- function(baseDirectory_ML, baseDirectory_CMAP, years, maskPath) {
+compareRasterClassification <- function(baseDirectory_1, baseDirectory_2, n, maskPath) {
 
   cloudMask <- raster(maskPath)
-  # Initialization of a variable to accumulate differences across years
+  # Initialization of a variable to accumulate differences across
   accumulatedDifferences <- NULL
 
   # Loop over each year to process the corresponding rasters
-  for (i in 1:length(years)) {
+  for (i in 1:length(n)) {
     # Construct paths to the ML and CMAP rasters
-    mlRasterPath <- paste0(baseDirectory_ML,"Classification_", years[i], ".TIF")
-    cmapRasterPath <- paste0(baseDirectory_CMAP,  "CMAP_", i, ".TIF")
+    RasterPath1 <- paste0(baseDirectory_1,"Classification_", i, ".TIF")
+    RasterPath2 <- paste0(baseDirectory_2,  "Classification_", i, ".TIF")
 
     # Load the rasters
-    mlRaster <- raster(mlRasterPath)
-    cmapRaster <- raster(cmapRasterPath)
+    Raster1 <- raster(RasterPath1)
+    Raster2 <- raster(RasterPath2)
 
     # Calculate differences
-    difference <- mlRaster - cmapRaster
-    differenceMask <- mlRaster * 0
+    difference <- Raster1 - cmapRaster2
+    differenceMask <- Raster1 * 0
     differenceMask[which(difference[] != 0)] <- 1
 
     # Apply cloud mask to the difference mask

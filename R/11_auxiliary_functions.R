@@ -60,29 +60,35 @@ img2df <- function(image,band_names){
 #' df_img <- data.frame(Band1 = runif(100), Band2 = runif(100), Band3 = runif(100))
 #' template_raster <- stack(replicate(3, raster::raster(matrix(runif(100), 10, 10))))
 #' img_f <- df2img(df_img, template_raster)
-df2img <- function(df_img, image){
-
+df2img <- function(df_img, image) {
+  # Extrair dimensões da imagem de referência
   nrows <- dim(image)[1]
   ncols <- dim(image)[2]
-  nbands <- length(df_img)
+  nbands <- ncol(df_img)  # Número de colunas no dataframe indica o número de bandas
 
-  # Inicializa um array 3D para a imagem
-  array <- array(0, dim = c(nrows, ncols, nbands))
+  # Verificar se temos apenas uma banda
+  if (nbands == 1) {
+    data_vector <- as.vector(as.numeric(df_img[[1]]))
 
-  # for para preencher o array com os dados de cada banda
-  for(i in 1:nbands){
+    # Criar o RasterLayer
+    img_f <- raster(nrows=nrows, ncols=ncols)  # Inicializa um RasterLayer vazio
+    values(img_f) <- data_vector  # Preenche o RasterLayer com valores
+    extent(img_f) <- extent(image)  # Define a mesma extensão da imagem de referência
+    projection(img_f) <- crs(image)  # Define o mesmo CRS da imagem de referência
 
-    # Extraí os dados da i-ésima coluna do data frame
-    band_data <- df_img[[i]]
-
-    # Reconstrói a matriz 2D da i-ésima banda e atribui ao array da imagem
-    array[,,i] <- matrix(band_data, nrow = nrows, ncol = ncols, byrow = TRUE)
+  } else {
+    # Tratar como array tridimensional para múltiplas bandas
+    array_t <- array(0, dim = c(nrows, ncols, nbands))
+    # Preencher o array com os dados de cada banda
+    for (i in 1:nbands) {
+      array_t[,,i] <- matrix(df_img[[i]], nrow = nrows, ncol = ncols, byrow = TRUE)
+    }
+    # Criar um RasterBrick
+    img_f <- brick(array_t)
+    projection(img_f) <- crs(image)
+    extent(img_f) <- extent(image)
+    crs(img_f) <- crs(image)
   }
-
-  extent <- image@extent
-  crs <- crs(image)
-  img_f <- raster::brick(array, xmn = extent@xmin, xmx = extent@xmax,
-               ymn = extent@ymin, ymx = extent@ymax, crs = crs)
 
   return(img_f)
 }

@@ -921,6 +921,7 @@ extract_hierarchy <- function(hclust_obj) {
 #' @param confusion_matrix A confusion matrix with class labels as row and column names.
 #' @param title A character string specifying the title of the plot.
 #' @param dict An optional named vector for renaming the class labels.
+#' @param custom_colors A named vector for specifying the color of classes.
 #' @return A ggplot object representing the bubble plot.
 #' @importFrom ggplot2 ggplot aes geom_point geom_text labs theme_minimal theme element_text element_line element_blank scale_size_continuous scale_color_manual
 #' @importFrom dplyr %>% group_by mutate
@@ -940,7 +941,7 @@ extract_hierarchy <- function(hclust_obj) {
 #' ball_graphs(conf_matrix, title = "Confusion Matrix Bubble Plot", dict = dict)
 #'
 #'
-ball_graphs <- function(confusion_matrix, title = NULL, dict = NULL) {
+ball_graphs <- function(confusion_matrix, custom_colors = NULL, title = NULL, dict = NULL ) {
   confusion_matrix_long <- reshape2::melt(confusion_matrix)
 
   # Convert Prediction and Reference to factors
@@ -956,10 +957,13 @@ ball_graphs <- function(confusion_matrix, title = NULL, dict = NULL) {
   confusion_matrix_long <- confusion_matrix_long %>%
     dplyr::group_by(Reference) %>%
     dplyr::mutate(Relative_Frequency = value / sum(value),
-                  Percent_Label = scales::percent(Relative_Frequency, accuracy = 0.1))
+                  Percent_Label = gsub("\\.", ",", scales::percent(Relative_Frequency, accuracy = 0.1)))
 
-  # Define a custom color palette
-  custom_colors <- c("A" = "darkorange2", "B" = "darkgreen", "C" = "gold1")
+  # Define a default gray color palette if custom_colors is not provided
+  if (is.null(custom_colors)) {
+    custom_colors <- rep("gray", length(unique(confusion_matrix_long$Reference)))
+    names(custom_colors) <- unique(confusion_matrix_long$Reference)
+  }
 
   # Create the plot
   ggplot2::ggplot(confusion_matrix_long, aes(x = Reference, y = Prediction, size = Relative_Frequency)) +
@@ -979,6 +983,7 @@ ball_graphs <- function(confusion_matrix, title = NULL, dict = NULL) {
                    panel.grid.minor = ggplot2::element_blank(),  # Remove minor grid lines
                    axis.line = ggplot2::element_line(color = "gray50", size = 0.5)) +  # Axis lines
     ggplot2::scale_color_manual(values = custom_colors)  # Manually assign colors
+
 }
 
 
